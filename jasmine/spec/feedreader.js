@@ -26,37 +26,25 @@ $(function() {
             expect(allFeeds.length).not.toBe(0);
         });
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
-         */
-
          // Este Teste é Bem Direto, ele apenas verificará com um loop for se todos
          // os feed presentes no JSON tem uma URL e ela não é nula
          it('have URL', function(){
-           for (feed in allFeeds){
+           for (let feed = 0; feed < allFeeds.length; feed ++){
              expect(allFeeds[feed].url).toBeDefined();
-             expect(allFeeds[feed].url).not.toBeNull();
+             expect(allFeeds[feed].url.length).not.toBe(0);
            }
          });
-
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a name defined
-         * and that the name is not empty.
-         */
 
          // Como no teste anterior, ele  verificará com um loop for se todos
          // os feed presentes no JSON tem uma Nome e não é nulo
          it('have Name', function(){
-           for (feed in allFeeds){
+           for (let feed = 0; feed < allFeeds.length; feed ++){
              expect(allFeeds[feed].name).toBeDefined();
-             expect(allFeeds[feed].name).not.toBeNull();
+             expect(allFeeds[feed].name.lenght).not.toBe(0);
            }
          });
 
     });
-
-    /* TODO: Write a new test suite named "The menu" */
 
     describe('The menu', function() {
       // Aqui defini as variaveis que irei usar nos proximos testes.
@@ -65,75 +53,44 @@ $(function() {
       // e criei uma variavel booleana para ver se inicialmente o body tem a classe "menu-hidden"
       let initialHiddenValue = $('body').hasClass("menu-hidden");
 
-      /* TODO: Write a test that ensures the menu element is
-       * hidden by default. You'll have to analyze the HTML and
-       * the CSS to determine how we're performing the
-       * hiding/showing of the menu element.
-       */
-
        // Como já defini anteriormente, neste teste apenas verifiquei se initialHiddenValue é verdadeira
        it('is Hidden', function(){
          expect(initialHiddenValue).toBe(true);
        });
 
-       /* TODO: Write a test that ensures the menu changes
-        * visibility when the menu icon is clicked. This test
-        * should have two expectations: does the menu display when
-        * clicked and does it hide when clicked again.
-        */
-
         // Aqui fiz 2 simulações do click do menuIcon e a cada click comparei o valor de initialHiddenValue
-        // com o valor que procurei na verificação da classe "menu-hidden", a logica é com um click ser diferente
-        // e com o proximo click retornar ao valor inicial
+        // com o valor que procurei na verificação da classe "menu-hidden", a logica é com um click ser false
+        // e com o proximo click retornar a true
         it('toggle Visibility', function(){
           menuIcon.click();
-          expect($("body").hasClass("menu-hidden")).not.toBe(initialHiddenValue);
+          expect($("body").hasClass("menu-hidden")).toBe(false);
           menuIcon.click();
-          expect($("body").hasClass("menu-hidden")).toBe(initialHiddenValue);
+          expect($("body").hasClass("menu-hidden")).toBe(true);
         });
     });
 
-    /* TODO: Write a new test suite named "Initial Entries" */
-
     describe('Initial Entries', function() {
 
-      /* TODO: Write a test that ensures when the loadFeed
-       * function is called and completes its work, there is at least
-       * a single .entry element within the .feed container.
-       * Remember, loadFeed() is asynchronous so this test will require
-       * the use of Jasmine's beforeEach and asynchronous done() function.
-       */
+       // criei uma variavel para armazenar o feed Array dos entries
+       let feedEntries;
 
-       // Aqui defini as variaveis que irei usar nos proximos testes.
-       // criei uma variavel para armazenar o tamanho do feed
-       let feedSize;
-       // e armazenei em uma variavel o feedlist
-       let feedList = $('.feed-list');
-
-       // acessei o loadFeed assincrona e verifiquei o tamanho da lista retornada e armazenei em feedSize
+       // acessei o loadFeed assincrona e verifiquei o array retornado e o armazenei em feedEntries
        beforeEach(function(done){
          loadFeed(0, () => {
-           feedSize = feedList.length;
+           feedEntries = $('.feed .entry');
            done();
          })
        });
 
-       // aqui verifiquei se o valor de feedSize é maior que 0
-       it('should load initial feeds', function(done){
-         expect(feedSize).toBeGreaterThan(0);
-         done();
+       // aqui verifiquei se o tamanho de feedEntries é maior que 0
+       it('should load initial feeds', function(){
+         console.log(feedEntries);
+         expect(feedEntries.length).toBeGreaterThan(0);
        });
 
     });
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
-
     describe('New Feed Selection', function() {
-
-      /* TODO: Write a test that ensures when a new feed is loaded
-       * by the loadFeed function that the content actually changes.
-       * Remember, loadFeed() is asynchronous.
-       */
 
        // Aqui defini as variaveis que irei usar nos proximos testes.
        // criei duas variaveis para armazenar cada feed
@@ -147,21 +104,16 @@ $(function() {
        beforeEach(function(done){
          loadFeed(0, () => {
            feedA = feedContainer.html();
-           console.log(feedA);
+           loadFeed(1, () => {
+             feedB = feedContainer.html();
+             done();
+           });
          });
-
-         loadFeed(1, () => {
-           feedB = feedContainer.html();
-           console.log(feedB);
-           done();
-         });
-
        });
 
        // comparei as duas variaveis, o teste passa apenas se as duas forem diferentes
-       it('should change feeds on loadFeed()', function(done){
-         expect(feedA).not.toMatch(feedB);
-         done();
+       it('should change feeds on loadFeed()', function(){
+         expect(feedA).not.toEqual(feedB);
        });
     });
 }());
